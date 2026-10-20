@@ -9,6 +9,8 @@ if str(SRC_DIR) not in sys.path:
 
 from embedding_generator import EmbeddingGenerator
 from vector_store import VectorStore
+from document_loader import extract_text_from_pdf
+from text_chunker import chunk_text
 
 
 class RAGPipeline:
@@ -16,9 +18,33 @@ class RAGPipeline:
 
     def __init__(self):
         self.embedding_generator = EmbeddingGenerator()
+
         self.vector_store = VectorStore()
+
+        project_dir = Path(__file__).resolve().parent.parent
+
+        pdf_path = project_dir / "data" / "sample_loan_policy.pdf"
+
+        # Populate ChromaDB if the collection is empty
+
+        if self.vector_store.collection.count() == 0:
+
+            pages = extract_text_from_pdf(pdf_path)
+
+            chunks = chunk_text(pages)
+
+            if chunks:
+
+                texts = [chunk["text"] for chunk in chunks]
+
+                embeddings = self.embedding_generator.generate_embeddings(texts)
+
+                self.vector_store.add_documents(chunks, embeddings)
+
         self.ollama_url = "http://localhost:11434/api/generate"
+
         self.model = "gemma4:e2b"
+        
 
     def answer_question(self, question, top_k=3):
         """Retrieve relevant passages and generate an answer using Ollama."""
