@@ -1,0 +1,9 @@
+.venv/
+.venv312/
+__pycache__/
+*.py[cod]
+.env
+.DS_Store
+
+# ChromaDB generated database
+/data/chroma_db/
