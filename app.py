@@ -33,6 +33,7 @@ def load_rag_pipeline():
 
 try:
     rag = load_rag_pipeline()
+    st.write("Indexed document chunks:", rag.vector_store.collection.count())
 
     question = st.text_input(
         "Enter your question:",
