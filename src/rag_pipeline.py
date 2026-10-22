@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
-import requests
+import os
+from groq import Groq
 
 # Allow imports from the src directory
 SRC_DIR = Path(__file__).resolve().parent
@@ -42,9 +43,10 @@ class RAGPipeline:
 
                 self.vector_store.add_documents(chunks, embeddings)
 
-        self.ollama_url = "http://localhost:11434/api/generate"
+        self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        self.model = "openai/gpt-oss-120b"
 
-        self.model = "gemma4:e2b"
+       
         
 
     def answer_question(self, question, top_k=3):
