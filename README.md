@@ -2,9 +2,11 @@
 
 An AI-Powered Financial Document Question-Answering System
 
-🚀 Live Application
+## 🚀 Live Application
 
-Try the application here:
+### 👉 [Click Here to Try the RAG Assistant](https://financial-document-intelligence-rag-assistant-aeyztvqw2ehizfzu.streamlit.app/)
+
+Explore the Financial Document Intelligence RAG Assistant live. Ask questions about financial policy documents and receive AI-generated answers based on relevant document passages.
 
 👉 ⁠Open Financial Document Intelligence RAG Assistant
 
