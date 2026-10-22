@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import sys
 
+import streamlit as st
 from groq import Groq
 
 # Allow imports from the src directory
@@ -24,10 +25,20 @@ class RAGPipeline:
         self.embedding_generator = EmbeddingGenerator()
         self.vector_store = VectorStore()
 
-        # Configure Groq answer generation
-        self.model = "openai/gpt-oss-120b"
-        self.api_key = os.environ.get("GROQ_API_KEY")
+        # Read the Groq API key from Streamlit Secrets or environment
+        try:
+            self.api_key = (
+                st.secrets.get("GROQ_API_KEY")
+                or os.environ.get("GROQ_API_KEY")
+            )
+        except Exception:
+            self.api_key = os.environ.get("GROQ_API_KEY")
+
+        # Initialize Groq only when an API key is available
         self.client = Groq(api_key=self.api_key) if self.api_key else None
+
+        # Groq model
+        self.model = "openai/gpt-oss-120b"
 
         # Locate the sample PDF
         project_dir = Path(__file__).resolve().parent.parent
@@ -111,7 +122,7 @@ class RAGPipeline:
             for item in context
         )
 
-        # Ensure the Groq API key is configured
+        # Check whether the Groq API key is configured
         if self.client is None:
             return {
                 "question": question,
@@ -120,7 +131,7 @@ class RAGPipeline:
                 "message": (
                     "Passages retrieved, but answer generation failed: "
                     "GROQ_API_KEY is not configured. "
-                    "Add it to Streamlit Cloud Secrets."
+                    "Check Streamlit Cloud Secrets."
                 ),
             }
 
@@ -149,8 +160,9 @@ class RAGPipeline:
                 temperature=0,
             )
 
-            answer = response.choices[0].message.content or ""
-            answer = answer.strip()
+            answer = (
+                response.choices[0].message.content or ""
+            ).strip()
 
             message = (
                 "Relevant passages retrieved and answer generated successfully."
