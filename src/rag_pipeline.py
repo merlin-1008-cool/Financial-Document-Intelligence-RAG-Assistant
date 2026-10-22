@@ -36,6 +36,7 @@ class RAGPipeline:
 
         # Initialize Groq only when an API key is available
         self.client = Groq(api_key=self.api_key) if self.api_key else None
+        print("DEBUG: Groq API key loaded:", bool(self.api_key))
 
         # Groq model
         self.model = "openai/gpt-oss-120b"
