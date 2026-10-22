@@ -117,22 +117,42 @@ Question:
 Answer:
 """
 
-        try:
-            response = requests.post(
-                self.ollama_url,
-                json={
-                    "model": self.model,
-                    "prompt": prompt,
-                    "stream": False
-                },
-                timeout=120
+                try:
+            if not os.environ.get("GROQ_API_KEY"):
+                raise ValueError(
+                    "GROQ_API_KEY is not configured in Streamlit Secrets."
+                )
+
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a financial document assistant. "
+                            "Answer using only the supplied context. "
+                            "If the context does not contain the answer, "
+                            "say the provided documents do not contain "
+                            "enough information. Do not invent policies."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            f"Context:\n{context_text}\n\n"
+                            f"Question:\n{question}"
+                        )
+                    }
+                ],
+                temperature=0
             )
-            response.raise_for_status()
-            answer = response.json()["response"].strip()
 
-            message = "Relevant passages retrieved and answer generated successfully."
+            answer = response.choices[0].message.content.strip()
+            message = (
+                "Relevant passages retrieved and answer generated successfully."
+            )
 
-        except requests.RequestException as error:
+        except Exception as error:
             answer = ""
             message = f"Passages retrieved, but answer generation failed: {error}"
 
