@@ -23,7 +23,7 @@ class RAGPipeline:
 
         project_dir = Path(__file__).resolve().parent.parent
 
-        pdf_path = project_dir / "data" / "sample_loan_policy.pdf"
+        pdf_path = project_dir / “data” / “sample_documents” / “sample_loan_policy.pdf”
 
         # Populate ChromaDB if the collection is empty
 
